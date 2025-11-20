@@ -45,6 +45,9 @@
       cursor: pointer;
       font-size: 15px;
       transition: background 0.3s ease, transform 0.2s ease;
+      white-space: nowrap;         /* wrapping nhi */
+      overflow: hidden;
+      text-overflow: ellipsis;     /* Add ...  */
     }
 
     .pbi-btn:hover {
@@ -79,21 +82,21 @@
     }
 
     .pbi-iframe-wrap {
-  position: relative;
-  background: #111827;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 80vh;   /* make the container tall */
-}
+      position: relative;
+      background: #111827;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-.pbi-frame {
-  width: 100%;
-  height: 100vh;       /* reduce/increase as needed: 70vh, 85vh, etc. */
-  border: 0;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
+    .pbi-frame {
+      width: 100%;
+      height: calc(100vh - 64px);
+      border: 0;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      display: block;
+    }
 
     .pbi-loader {
       position: absolute;
@@ -111,15 +114,8 @@
       text-align: center;
       padding: 40px;
       animation: pulse 1.5s infinite;
+      display: none;
     }
-
-    
-.pbi-btn {
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden;
-  text-overflow: ellipsis; /* Add ... if text is too long */
-}
-
 
     @keyframes pulse {
       0% { opacity: 0.6; }
@@ -154,11 +150,11 @@
 
       <button class="pbi-btn" data-title="Sourcing Summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=9c267d4c-818b-4ecf-9bba-a078a7140ec6&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">🏭 Sourcing Summary</button>
 
-      <button class="pbi-btn" data-title="Open Demands" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=dfa8156a-12ce-4436-b0e5-501ce21cdfe2&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👥 Open Demands</button>
+      <button class="pbi-btn" data-title="Open Demands" data-report-url="https://app.powerbi.com/reportEmbed?reportId=dfa8156a-12ce-4436-b0e5-501ce21cdfe2&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👥 Open Demands</button>
 
-      <button class="pbi-btn" data-title="Demands Fulfillments" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=679051e7-c3bf-40ce-b58d-960f7863127b&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">📦 Demands Fulfillments</button>
+      <button class="pbi-btn" data-title="Demands Fulfillments" data-under-construction="true">📦 Demands Fulfillments</button>
 
-      <button class="pbi-btn" data-title="Bench" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=98935ab8-050a-44d3-9efb-ee5ad98e0a34&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏽‍💼 Bench</button>
+      <button class="pbi-btn" data-title="Bench" data-report-url="https://app.powerbi.com/reportEmbed?reportId=98935ab8-050a-44d3-9efb-ee5ad98e0a34&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏽‍💼 Bench</button>
 
       <button class="pbi-btn" data-title="Demand Vs Bench summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=93df4327-8c5a-408b-81f0-ae802ac3f9cb&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏼‍💻 Demand Vs Bench summary</button>
 
@@ -173,7 +169,7 @@
       </div>
       <div class="pbi-iframe-wrap">
         <div class="pbi-loader" id="pbi-loader">🔄 Loading report...</div>
-        <div class="pbi-placeholder" id="pbi-placeholder" style="display: none;">
+        <div class="pbi-placeholder" id="pbi-placeholder">
           🚧 <strong>This report is under construction.</strong><br/>
           Please check back soon for updates!
         </div>
@@ -192,6 +188,7 @@
       const placeholder = document.getElementById('pbi-placeholder');
 
       function loadReport(url, title) {
+        // loader and shade in krega, block dala hai, none liya hai placeholedr pe
         loader.style.display = 'block';
         placeholder.style.display = 'none';
         iframe.style.display = 'block';
@@ -207,6 +204,24 @@
         try { sessionStorage.setItem(STORAGE_KEY, url); } catch (e) {}
       }
 
+      function openInNewTab(url) {
+        // Open in a new tab with isolation
+        const newWin = window.open(url, '_blank', 'noopener,noreferrer');
+        if (!newWin) {
+          // Popup blocked — fallback notice (non-intrusive)
+          console.warn('Popup blocked. Allow pop-ups to open the report in a new tab.');
+        }
+      }
+      
+      function opentab(url)
+      {
+        cons newwindow = window.open(url, '_blank', noreferrer)
+        if(!newwin)
+        {
+          console.warn('popup not allow')
+        }
+      }
+
       function showPlaceholder(title) {
         loader.style.display = 'none';
         iframe.style.display = 'none';
@@ -219,6 +234,7 @@
         btn.classList.add('active');
       }
 
+      // Click behavior: load in iframe + ALSO open in new tab
       buttons.forEach(btn => {
         btn.addEventListener('click', () => {
           const title = btn.getAttribute('data-title') || btn.textContent?.trim();
@@ -229,12 +245,20 @@
 
           if (isUnderConstruction) {
             showPlaceholder(title);
-          } else {
-            loadReport(url, title);
+            return; // 🚫 No redirect for under-construction
           }
+
+          if (!url) return;
+
+          // 1) Load inside display area
+          loadReport(url, title);
+
+          // 2) Open the same link in a new tab
+          openInNewTab(url);
         });
       });
 
+      // Initial load from sessionStorage OR first button (but DO NOT open new tab automatically)
       const saved = (() => {
         try { return sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
       })();
@@ -251,40 +275,12 @@
 
         if (isUnderConstruction) {
           showPlaceholder(title);
-        } else {
+        } else if (url) {
+          // Only load in the iframe on first paint – no new tab here
           loadReport(url, title);
         }
       }
     })();
   </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
