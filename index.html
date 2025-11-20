@@ -1,267 +1,312 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Power BI Dashboard - Shaurya</title>
-  <style>
-    body {
-      margin: 0;
-      background: linear-gradient(to right, #f5f6f8, #e2e8f0);
-      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Power BI Dashboard - Shaurya</title>
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(to right, #f5f6f8, #e2e8f0);
+    font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  }
 
+  .pbi-dashboard {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 100vh;
+    transition: grid-template-columns 0.3s ease;
+  }
+
+  .pbi-sidebar {
+    background: #1f2937;
+    color: #e5e7eb;
+    padding: 20px 12px;
+    box-shadow: 2px 0 -direction: column;
+    justify-content: space-between;
+  }
+
+  .pbi-sidebar h2 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+
+  .pbi-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #e5e7eb;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 6px 0;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pbi-btn:hover {
+    background: #374151;
+    transform: scale(1.02);
+  }
+
+  .pbi-btn.active {
+    background: #2563eb;
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .focus-toggle {
+    margin-top: 20px;
+    background: #374151;
+    color: #fff;
+    font-weight: bold;
+    justify-content: center;
+  }
+
+  .focus-toggle:hover {
+    background: #2563eb;
+  }
+
+  .pbi-content {
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  .pbi-header {
+    padding: 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+  }
+
+  .pbi-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .back-btn {
+    display: none;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  .focus-mode .back-btn {
+    display: inline-block;
+  }
+
+  .pbi-iframe-wrap {
+    position: relative;
+    background: #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pbi-frame {
+    width: 100%;
+    height: calc(100vh - 64px);
+    border: 0;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  .pbi-loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    display: none;
+  }
+
+  .pbi-placeholder {
+    color: #fff;
+    font-size: 20px;
+    text-align: center;
+    padding: 40px;
+    animation: pulse 1.5s infinite;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  /* Focus Mode */
+  .pbi-dashboard.focus-mode {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pbi-dashboard.focus-mode .pbi-sidebar {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
     .pbi-dashboard {
-      display: grid;
-      grid-template-columns: 270px 1fr;
-      min-height: 100vh;
+      grid-template-columns: 1fr;
     }
-
     .pbi-sidebar {
-      background: #1f2937;
-      color: #e5e7eb;
-      padding: 20px 12px;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.1);
-    }
-
-    .pbi-sidebar h2 {
-      color: #ffffff;
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .pbi-btn {
       display: flex;
-      align-items: center;
+      overflow-x: auto;
       gap: 8px;
-      width: 100%;
-      border: none;
-      background: transparent;
-      color: #e5e7eb;
-      padding: 12px 14px;
-      border-radius: 8px;
-      margin: 6px 0;
-      cursor: pointer;
-      font-size: 15px;
-      transition: background 0.3s ease, transform 0.2s ease;
     }
-
-    .pbi-btn:hover {
-      background: #374151;
-      transform: scale(1.02);
+    .pbi-btn {
+      flex: 0 0 auto;
+      white-space: nowrap;
     }
-
-    .pbi-btn.active {
-      background: #2563eb;
-      color: #fff;
-      font-weight: 600;
-    }
-
-    .pbi-content {
-      display: grid;
-      grid-template-rows: auto 1fr;
-    }
-
-    .pbi-header {
-      padding: 16px;
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .pbi-title {
-      font-size: 18px;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .pbi-iframe-wrap {
-  position: relative;
-  background: #111827;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  width: 100%;
-  height: 100%;
-}
-
-    .pbi-frame {
-  width: 100%;
-  height: 100vh; /* Full viewport height */
-  border: none;
-  display: block;
-}
-
-    .pbi-loader {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      font-size: 16px;
-      display: none;
-    }
-
-    .pbi-placeholder {
-      color: #fff;
-      font-size: 20px;
-      text-align: center;
-      padding: 40px;
-      animation: pulse 1.5s infinite;
-    }
-
-    
-.pbi-btn {
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden;
-  text-overflow: ellipsis; /* Add ... if text is too long */
-}
-
-
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
-
-    @media (max-width: 900px) {
-      .pbi-dashboard {
-        grid-template-columns: 1fr;
-      }
-      .pbi-sidebar {
-        display: flex;
-        overflow-x: auto;
-        gap: 8px;
-      }
-      .pbi-btn {
-        flex: 0 0 auto;
-        white-space: nowrap;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="pbi-dashboard" role="application" aria-label="PBS Reports Dashboard">
-    
-    <!-- Sidebar -->
-    <aside class="pbi-sidebar" aria-label="Report navigation">
-      <h2>📊 PBS Reports</h2>
-
+<div class="pbi-dashboard">
+  <!-- Sidebar -->
+  <aside class="pbi-sidebar">
+    <div>
+      <h2>📊 Power BI Reports</h2>
       <button class="pbi-btn active" data-title="Head count Summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=b4c93cdc-bb34-4bf9-9127-f0bcf52cba84&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">📈 Head count Summary</button>
-
       <button class="pbi-btn" data-title="Sourcing Summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=9c267d4c-818b-4ecf-9bba-a078a7140ec6&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">🏭 Sourcing Summary</button>
-
-      <button class="pbi-btn" data-title="Open Demands" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=dfa8156a-12ce-4436-b0e5-501ce21cdfe2&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👥 Open Demands</button>
-
+      <button class="pbi-btn" data-title="Open Demands" data-under-construction="true">👥 Open Demands</button>
       <button class="pbi-btn" data-title="Demands Fulfillments" data-under-construction="true">📦 Demands Fulfillments</button>
+      <button class="pbi-btn" data-title="Bench" data-under-construction="true">👩🏽‍💼 Bench</button>
+      <button class="pbi-btn" data-title="Demand Vs Bench summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=9c267d4c-818b-4ecf-9bba-a078a7140ec6&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏼‍💻 Demand Vs Bench summary</button>
+    </div>
+    <button class="pbi-btn focus-toggle" id="focus-btn">🔍 Focus Mode</button>
+  </aside>
 
-      <button class="pbi-btn" data-title="Bench" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=98935ab8-050a-44d3-9efb-ee5ad98e0a34&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏽‍💼 Bench</button>
-
-        <button class="pbi-btn" data-title="Demand Vs Bench Summary" data-report-url="https://app.powerbi.com/reportEmbed?reportId=93df4327-8c5a-408b-81f0-ae802ac3f9cb&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏼‍💻 Demand Vs Bench summary</button>
-    
-
-      <button class="pbi-btn" data-title="Capability Summary" data-report-url= "https://app.powerbi.com/reportEmbed?reportId=3700138f-c7b6-4997-b474-4655fd973d63&autoAuth=true&ctid=76a2ae5a-9f00-4f6b-95ed-5d33d77c4d61">👩🏽‍💼 Capability Summary</button>
-</aside>
-    
-
-    <!-- Content -->
-    <section class="pbi-content">
-      <div class="pbi-header">
-        <span class="pbi-title" id="pbi-current-title"></span>
+  <!-- Content -->
+  <section class="pbi-content">
+    <div class="pbi-header">
+      <span class="pbi-title" id="pbi-current-title">Sales Overview</span>
+      <button class="back-btn" id="back-btn">↩ Back</button>
+    </div>
+    <div class="pbi-iframe-wrap">
+      <div class="pbi-loader" id="pbi-loader">🔄 Loading report...</div>
+      <div class="pbi-placeholder" id="pbi-placeholder" style="display: none;">
+        🚧 <strong>This report is under construction.</strong><br/>
+        Please check back soon for updates!
       </div>
-      <div class="pbi-iframe-wrap">
-        <div class="pbi-loader" id="pbi-loader">🔄 Loading report...</div>
-        <div class="pbi-placeholder" id="pbi-placeholder" style="display: none;">
-          🚧 <strong>This report is under construction.</strong><br/>
-          Please check back soon for updates!
-        </div>
-        <iframe id="pbi-frame" class="pbi-frame" title="PBS Reports" allowfullscreen="true"></iframe>
-      </div>
-    </section>
-  </div>
+      <iframe id="pbi-frame" class="pbi-frame" title="Power BI Report" allowfullscreen="true"></iframe>
+    </div>
+  </section>
+</div>
 
-  <script>
-    (function () {
-      const STORAGE_KEY = 'pbiActiveReportUrl';
-      const buttons = Array.from(document.querySelectorAll('.pbi-btn'));
-      const iframe = document.getElementById('pbi-frame');
-      const titleEl = document.getElementById('pbi-current-title');
-      const loader = document.getElementById('pbi-loader');
-      const placeholder = document.getElementById('pbi-placeholder');
+<script>
+(function () {
+  const STORAGE_KEY = 'pbiActiveReportUrl';
+  const buttons = Array.from(document.querySelectorAll('.pbi-btn:not(.focus-toggle)'));
+  const iframe = document.getElementById('pbi-frame');
+  const titleEl = document.getElementById('pbi-current-title');
+  const loader = document.getElementById('pbi-loader');
+  const placeholder = document.getElementById('pbi-placeholder');
+  const focusBtn = document.getElementById('focus-btn');
+  const backBtn = document.getElementById('back-btn');
+  const dashboard = document.querySelector('.pbi-dashboard');
 
-      function loadReport(url, title) {
-        loader.style.display = 'block';
-        placeholder.style.display = 'none';
-        iframe.style.display = 'block';
-        iframe.style.opacity = 0;
+  function loadReport(url, title) {
+    loader.style.display = 'block';
+    placeholder.style.display = 'none';
+    iframe.style.display = 'block';
+    iframe.style.opacity = 0;
 
-        iframe.onload = () => {
-          loader.style.display = 'none';
-          iframe.style.opacity = 1;
-        };
+    iframe.onload = () => {
+      loader.style.display = 'none';
+      iframe.style.opacity = 1;
+    };
 
-        iframe.src = url;
-        if (titleEl) titleEl.textContent = title || 'Report';
-        try { sessionStorage.setItem(STORAGE_KEY, url); } catch (e) {}
+    iframe.src = url;
+    if (titleEl) titleEl.textContent = title || 'Report';
+    try { sessionStorage.setItem(STORAGE_KEY, url); } catch (e) {}
+  }
+
+  function showPlaceholder(title) {
+    loader.style.display = 'none';
+    iframe.style.display = 'none';
+    placeholder.style.display = 'block';
+    if (titleEl) titleEl.textContent = title || 'Coming Soon';
+  }
+
+  function setActive(btn) {
+    buttons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const title = btn.getAttribute('data-title') || btn.textContent?.trim();
+      const url = btn.getAttribute('data-report-url');
+      const isUnderConstruction = btn.hasAttribute('data-under-construction');
+
+      setActive(btn);
+
+      if (isUnderConstruction) {
+        showPlaceholder(title);
+      } else {
+        loadReport(url, title);
       }
+    });
+  });
 
-      function showPlaceholder(title) {
-        loader.style.display = 'none';
-        iframe.style.display = 'none';
-        placeholder.style.display = 'block';
-        if (titleEl) titleEl.textContent = title || 'Coming Soon';
-      }
+  const saved = (() => {
+    try { return sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  })();
 
-      function setActive(btn) {
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      }
+  const initialBtn = saved
+    ? buttons.find(b => b.getAttribute('data-report-url') === saved)
+    : buttons[0];
 
-      buttons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const title = btn.getAttribute('data-title') || btn.textContent?.trim();
-          const url = btn.getAttribute('data-report-url');
-          const isUnderConstruction = btn.hasAttribute('data-under-construction');
+  if (initialBtn) {
+    setActive(initialBtn);
+    const title = initialBtn.getAttribute('data-title') || initialBtn.textContent?.trim();
+    const url = initialBtn.getAttribute('data-report-url');
+    const isUnderConstruction = initialBtn.hasAttribute('data-under-construction');
 
-          setActive(btn);
+    if (isUnderConstruction) {
+      showPlaceholder(title);
+    } else {
+      loadReport(url, title);
+    }
+  }
 
-          if (isUnderConstruction) {
-            showPlaceholder(title);
-          } else {
-            loadReport(url, title);
-          }
-        });
-      });
+  // Focus Mode Toggle
+  let isFocus = false;
+  focusBtn.addEventListener('click', () => {
+    isFocus = true;
+    dashboard.classList.add('focus-mode');
+  });
 
-      const saved = (() => {
-        try { return sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
-      })();
+  backBtn.addEventListener('click', () => {
+    isFocus = false;
+    dashboard.classList.remove('focus-mode');
+  });
 
-      const initialBtn = saved
-        ? buttons.find(b => b.getAttribute('data-report-url') === saved)
-        : buttons[0];
-
-      if (initialBtn) {
-        setActive(initialBtn);
-        const title = initialBtn.getAttribute('data-title') || initialBtn.textContent?.trim();
-        const url = initialBtn.getAttribute('data-report-url');
-        const isUnderConstruction = initialBtn.hasAttribute('data-under-construction');
-
-        if (isUnderConstruction) {
-          showPlaceholder(title);
-        } else {
-          loadReport(url, title);
-        }
-      }
-    })();
-  </script>
+  // ESC key to exit Focus Mode
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isFocus) {
+      isFocus = false;
+      dashboard.classList.remove('focus-mode');
+    }
+  });
+})();
+</script>
 </body>
-
 </html>
-
-
-
-
